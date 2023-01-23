@@ -93,3 +93,4 @@ db.session.add(inventory4)
 db.session.add(inventory5)
 db.session.commit()
 
+api.add_resource(InventoryAPI, '/inventory')
