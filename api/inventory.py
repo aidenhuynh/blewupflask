@@ -80,17 +80,5 @@ class InventoryAPI(Resource):
         return {'message': 'Inventory added successfully'}, 200
 
 # Adding some sample data to the Inventory table
-inventory1 = Inventory(date='2022-01-01', action='purchase', user='John Doe', item='item1', quantity=10)
-inventory2 = Inventory(date='2022-01-02', action='purchase', user='Jane Doe', item='item2', quantity=5)
-inventory3 = Inventory(date='2022-01-03', action='sale', user='John Smith', item='item1', quantity=2)
-inventory4 = Inventory(date='2022-01-04', action='purchase', user='Jane Smith', item='item3', quantity=7)
-inventory5 = Inventory(date='2022-01-05', action='sale', user='Bob', item='item2', quantity=3)
-
-db.session.add(inventory1)
-db.session.add(inventory2)
-db.session.add(inventory3)
-db.session.add(inventory4)
-db.session.add(inventory5)
-db.session.commit()
 
 api.add_resource(InventoryAPI, '/inventory')
