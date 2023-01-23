@@ -59,4 +59,26 @@ class InventoryAPI(Resource):
         item = body.get('item')
         quantity = body.get('quantity')
 
+        # validate date
+        if date is None:
+            return {'message': 'Date is missing'}, 400
+        # validate action
+        if action is None:
+            return {'message': 'Action is missing'}, 400
+        # validate user
+        if user is None:
+            return {'message': 'User is missing'}, 400
+        # validate item
+        if item is None:
+            return {'message': 'Item is missing'}, 400
+        # validate quantity
+        if quantity is None:
+            return {'message': 'Quantity is missing'}, 400
 
+
+        inventory_item = Inventory(date=date, action=action, user=user, item=item, quantity=quantity)
+        inventory_item.add()
+
+        return {'message': 'Inventory added successfully'}, 201
+
+api.add_resource(InventoryAPI, '/inventory')
