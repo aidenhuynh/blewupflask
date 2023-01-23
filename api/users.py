@@ -39,6 +39,15 @@ class UserAPI(Resource):
                 uo.dob = datetime.strptime(dob, '%m-%d-%Y').date()
             except:
                 return {'message': f'Date of birth format error {dob}, must be mm-dd-yyyy'}, 210
+            
+        ''' #2: Key Code block to add user to database '''
+        # create user in database
+        user = uo.create()
+        # success returns json of user
+        if user:
+            return jsonify(user.read())
+        # failure returns error
+        return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 210
 
 class InventoryAPI(Resource):
     def post(self):
@@ -49,16 +58,5 @@ class InventoryAPI(Resource):
         user = body.get('user')
         item = body.get('item')
         quantity = body.get('quantity')
-
-        ''' #2: Key Code block to add user to database '''
-        # create user in database
-        user = uo.create()
-        # success returns json of user
-        if user:
-            return jsonify(user.read())
-        # failure returns error
-        return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 210
-
-
 
 
