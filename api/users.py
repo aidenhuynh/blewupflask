@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from datetime import datetime
 from model.users import User
+from .. import db
 from model.inventory import Inventory
 
 app = Flask(__name__)
@@ -59,4 +60,36 @@ class InventoryAPI(Resource):
         item = body.get('item')
         quantity = body.get('quantity')
 
+class InventoryAPI(Resource):
+    def post(self):
+        body = request.get_json()
+
+        date = body.get('date')
+        action = body.get('action')
+        user = body.get('user')
+        item = body.get('item')
+        quantity = body.get('quantity')
+
+        if date is None or action is None or user is None or item is None or quantity is None:
+            return {'message': 'Missing one or more required fields'}, 210
+
+        new_inventory = Inventory(date=date, action=action, user=user, item=item, quantity=quantity)
+        db.session.add(new_inventory)
+        db.session.commit()
+
+        return {'message': 'Inventory added successfully'}, 200
+
+# Adding some sample data to the Inventory table
+inventory1 = Inventory(date='2022-01-01', action='purchase', user='John Doe', item='item1', quantity=10)
+inventory2 = Inventory(date='2022-01-02', action='purchase', user='Jane Doe', item='item2', quantity=5)
+inventory3 = Inventory(date='2022-01-03', action='sale', user='John Smith', item='item1', quantity=2)
+inventory4 = Inventory(date='2022-01-04', action='purchase', user='Jane Smith', item='item3', quantity=7)
+inventory5 = Inventory(date='2022-01-05', action='sale', user='Bob', item='item2', quantity=3)
+
+db.session.add(inventory1)
+db.session.add(inventory2)
+db.session.add(inventory3)
+db.session.add(inventory4)
+db.session.add(inventory5)
+db.session.commit()
 
