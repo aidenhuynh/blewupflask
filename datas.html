@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Table</title>
+</head>
+<body>
+  <h1>Data Table</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>date</th>
+        <th>action</th>
+        <th>user</th>
+        <th>item</th>
+        <th>quantity</th>
+        <!-- Add more columns as needed -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row[0] }}</td>
+          <td>{{ row[1] }}</td>
+          <td>{{ row[2] }}</td>
+          <td>{{ row[3] }}</td>
+          <td>{{ row[4] }}</td>
+          <!-- Add more columns as needed -->
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
