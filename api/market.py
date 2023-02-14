@@ -5,11 +5,11 @@ from datetime import datetime
 
 from model.users import User
 
-market_api = Blueprint('market_api', __name__,
-                   url_prefix='/api/market')
+user_api = Blueprint('user_api', __name__,
+                   url_prefix='/api/user')
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
-api = Api(market_api)
+api = Api(user_api)
 
 class UserAPI:        
     class _Create(Resource):
