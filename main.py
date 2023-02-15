@@ -10,12 +10,6 @@ from api.apireal import mainData
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
-<<<<<<< HEAD
-=======
-app.register_blueprint(app_projects) # register app pages
-app.register_blueprint(mainData)
-
->>>>>>> 073e0b74180e3fb699edfb89c6c866e12b8b555e
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
     # note that we set the 404 status explicitly
