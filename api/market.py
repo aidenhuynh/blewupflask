@@ -6,7 +6,7 @@ from datetime import datetime
 from model.users import User
 
 user_api = Blueprint('user_api', __name__,
-                   url_prefix='/api/users')
+                   url_prefix='/api/market')
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(user_api)
@@ -26,7 +26,7 @@ class UserAPI:
             uid = body.get('product')
             if uid is None or len(uid) < 2:
                 return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-            # look for password and dob
+            # look for password and dob 
             password = body.get('cost')
             dob = body.get('stock')
 
