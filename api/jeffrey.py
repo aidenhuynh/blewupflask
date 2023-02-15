@@ -3,7 +3,7 @@ import sqlite3
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/jeffrey')
 def index():
     conn = sqlite3.connect('sqlites.db')
     cursor = conn.cursor()
