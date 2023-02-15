@@ -5,17 +5,10 @@ from flask import render_template  # import render_template from "public" flask 
 
 # import "packages" from "this" project
 from __init__ import app  # Definitions initialization
-from model.users import initUsers
-
-# setup APIs
-from api.user import user_api # Blueprint import api definition
+from api.apireal import mainData
 
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
-
-# register URIs
-app.register_blueprint(user_api) # register api routes
-app.register_blueprint(app_projects) # register app pages
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
@@ -29,10 +22,6 @@ def index():
 @app.route('/stub/')  # connects /stub/ URL to stub() function
 def stub():
     return render_template("stub.html")
-
-@app.before_first_request
-def activate_job():
-    initUsers()
 
 # this runs the application on the development server
 if __name__ == "__main__":
