@@ -6,7 +6,7 @@ from datetime import datetime
 from model.users import User
 
 market_api = Blueprint('market_api', __name__,
-                   url_prefix='/api/market')
+                   url_prefix='/api/markets')
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(market_api)
