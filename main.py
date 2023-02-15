@@ -13,9 +13,6 @@ from api.user import user_api # Blueprint import api definition
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
-# register URIs
-app.register_blueprint(covid_api) # register api routes
-
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
     # note that we set the 404 status explicitly
