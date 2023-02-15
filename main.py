@@ -18,7 +18,7 @@ from model.inventory import init_inventory
 app.register_blueprint(inventory_bp)
 
 # register URIs
-app.register_blueprint(covid_api) # register api routes
+app.register_blueprint(inventory_api) # register api routes
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
