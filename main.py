@@ -15,8 +15,7 @@ def init_db():
         db.create_all()
         init_inventory
 
-
 if __name__ == "__main__":
+    # change name for testing
     cors = CORS(app)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
-    app.run(debug=True, host="0.0.0.0", port="8135")
+    app.run(debug=True, host="0.0.0.0", port="8086")
