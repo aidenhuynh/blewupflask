@@ -1,69 +1,71 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource, reqparse
-from .. import db
-from ..model.inventory import InventoryEntry
+from __init__ import db
+from model.inventory import InventoryEntry
 
-table_bp = Blueprint("inventory", __name__)
-table_api = Api(table_bp)
+inventory_bp = Blueprint("inventory", __name__)
+inventory_api = Api(inventory_bp)
+
 
 class InventoryAPI(Resource):
     def get(self):
-        id = request.args.get("id")
-        entry = db.session.query(InventoryEntry).get(id)
-        if entry:
-            return entry.to_dict()
-        return {"message": "entry not found"}, 404
+        company = request.args.get("company")
+        entry = db.session.query(InventoryEntry).filter_by(_company=company).all()
+        print("abc" + str(company))
+        if len(entry) != 0:
+            return [e.to_dict() for e in entry]
+        return {"error": "company not found"}, 404
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("product_name", required=True, type=str)
-        parser.add_argument("product_description", required=True, type=str)
+        parser.add_argument("company", required=True, type=str)
+        parser.add_argument("action", required=True, type=int)
         parser.add_argument("quantity", required=True, type=int)
-        parser.add_argument("price", required=True, type=float)
+        parser.add_argument("extra_notes", required=True, type=str)
+        parser.add_argument("inventory_name", required=True, type=str)
         args = parser.parse_args()
 
         entry = InventoryEntry(
-            product_name=args["product_name"],
-            product_description=args["product_description"],
-            quantity=args["quantity"],
-            price=args["price"],
+            args["company"],
+            args["action"],
+            args["quantity"],
+            args["extra_notes"],
         )
-
         try:
             db.session.add(entry)
             db.session.commit()
             return entry.to_dict(), 201
         except Exception as e:
             db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
+            return {"error": f"server error: {e}"}, 500
 
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument("id", required=True, type=int)
-        parser.add_argument("product_name", type=str)
-        parser.add_argument("product_description", type=str)
-        parser.add_argument("quantity", type=int)
-        parser.add_argument("price", type=float)
+        parser.add_argument("action", required=False, type=int)
+        parser.add_argument("quantity", required=False, type=int)
+        parser.add_argument("extra_notes", required=False, type=str)
+        parser.add_argument("inventory_name", required=True, type=str)
         args = parser.parse_args()
 
         try:
             entry = db.session.query(InventoryEntry).get(args["id"])
             if entry:
-                if args["product_name"]:
-                    entry.product_name = args["product_name"]
-                if args["product_description"]:
-                    entry.product_description = args["product_description"]
+                if args["action"]:
+                    entry.calories = args["action"]
                 if args["quantity"]:
-                    entry.quantity = args["quantity"]
-                if args["price"]:
-                    entry.price = args["price"]
+                    entry.protein = args["quantity"]
+                if args["extra_notes"]:
+                    entry.extra_notes = args["extra_notes"]
+                if args["inventory_name"]:
+                    entry.extra_notes = args["inventory_name"]
                 db.session.commit()
                 return entry.to_dict()
             else:
-                return {"message": "entry not found"}, 404
+                return {"error": "entry not found"}, 404
         except Exception as e:
             db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
+            return {"error": f"server error: {e}"}, 500
 
     def delete(self):
         parser = reqparse.RequestParser()
@@ -77,30 +79,10 @@ class InventoryAPI(Resource):
                 db.session.commit()
                 return entry.to_dict()
             else:
-                return {"message": "entry not found"}, 404
+                return {"error": "entry not found"}, 404
         except Exception as e:
             db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
+            return {"error": f"server error: {e}"}, 500
 
 
-class InventoryListAPI(Resource):
-    def get(self):
-        try:
-            entries = db.session.query(InventoryEntry).all()
-            return [entry.to_dict() for entry in entries]
-        except Exception as e:
-            db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
-
-    def delete(self):
-        try:
-            db.session.query(InventoryEntry).delete()
-            db.session.commit()
-            return []
-        except Exception as e:
-            db.session.rollback()
-            return {"message": f"server error: {e}"}, 500
-
-
-table_api.add_resource(InventoryAPI, "/inventory")
-table_api.add_resource(InventoryListAPI, "/inventory/list")
+inventory_api.add_resource(InventoryAPI, "/inventory")
