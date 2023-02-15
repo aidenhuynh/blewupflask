@@ -5,11 +5,11 @@ from datetime import datetime
 
 from model.users import User
 
-user_api = Blueprint('user_api', __name__,
-                   url_prefix='/api/user')
+market_api = Blueprint('market_api', __name__,
+                   url_prefix='/api/market')
 
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
-api = Api(user_api)
+api = Api(market_api)
 
 class UserAPI:        
     class _Create(Resource):
@@ -19,16 +19,16 @@ class UserAPI:
             
             ''' Avoid garbage in, error checking '''
             # validate name
-            name = body.get('name')
+            name = body.get('date')
             if name is None or len(name) < 2:
                 return {'message': f'Name is missing, or is less than 2 characters'}, 400
             # validate uid
-            uid = body.get('uid')
+            uid = body.get('product')
             if uid is None or len(uid) < 2:
                 return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-            # look for password and dob
-            password = body.get('password')
-            dob = body.get('dob')
+            # look for password and dob 
+            password = body.get('cost')
+            dob = body.get('stock')
 
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name, 
@@ -67,7 +67,7 @@ class UserAPI:
             body = request.get_json()
             
             ''' Get Data '''
-            uid = body.get('uid')
+            uid = body.get('product')
             if uid is None or len(uid) < 2:
                 return {'message': f'User ID is missing, or is less than 2 characters'}, 400
             password = body.get('password')
