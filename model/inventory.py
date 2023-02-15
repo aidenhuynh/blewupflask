@@ -77,10 +77,10 @@ class InventoryEntry(db.Model):
         return {
             "id": self.id,
             "company": self.company,
-            "inventory name": self.inventory_name,
             "action": self.action,
             "quantity": self.quantity,
             "extra_notes": self.extra_notes,
+            "inventory_name": self.inventory_name,
         }
 
 
@@ -94,7 +94,7 @@ def init_inventory():
 
     entry1 = InventoryEntry("Company A", "Product A", "Shipped", 150, "out for delivery")
     entry2 = InventoryEntry("Company B", "Product B", "Delivered", 200, "out for pick-up")
-    entry3 = InventoryEntry("Company C", "Product C", "Stored", 250, "out for storage")
+    entry3 = InventoryEntry("Company C", "Product C", "Stored", 250, "in for storage")
 
     inventory_entries = [entry1, entry2, entry3]
 
