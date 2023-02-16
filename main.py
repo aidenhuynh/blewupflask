@@ -36,7 +36,7 @@ def init_db():
         db.create_all()
         print("test")
         initUsers()
-        init_inventory()
+      # init_inventory()
 
 if __name__ == "__main__":
     # change name for testing
