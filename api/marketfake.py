@@ -1,157 +1,82 @@
-from flask import Blueprint, request
-from flask_restful import Api, Resource 
-import requests
+import json
+from flask import Blueprint, request, jsonify
+from flask_restful import Api, Resource # used for REST API building
+from datetime import datetime
 
-mainData = Blueprint('marketfake', __name__, url_prefix='/api/marketfake')
+from model.users import User
 
-api = Api(mainData)
+marketfake_api = Blueprint('marketfake_api', __name__,
+                   url_prefix='/api/marketfake')
 
-data = [
-    {
-        "uid":"aidenhuynh",
-        "userData":[
-            {
-                "id":1,
-                "date":"01-05-2023",
-                "product":"Shipped",
-                "user":"aidenhuynh",
-                "cost":"Pencils",
-                "stock":"1500",
-            },
-            {
-                "id":2,
-                "date":"02-07-2023",
-                "product":"Delivered",
-                "user":"TheGerbil21",
-                "cost":"Pens",
-                "stock":"1000",
-            },
-            {
-                "id":3,
-                "date":"02-02-2023",
-                "product":"Packaged",
-                "user":"aidenhuynh",
-                "cost":"Markers",
-                "stock":"300",
-            },
-            {
-                "id":4,
-                "date":"01-15-2023",
-                "product":"In Transit",
-                "user":"aidenhuynh",
-                "cost":"Highlighters",
-                "stock":"100",
-            },
-            {
-                "id":5,
-                "date":"01-05-2023",
-                "product":"Shipped",
-                "user":"aidenhuynh",
-                "cost":"Pencils",
-                "stock":"1500",
-            },
-            {
-                "id":6,
-                "date":"02-07-2023",
-                "action":"Delivered",
-                "user":"TheGerbil21",
-                "item":"Pens",
-                "quantity":"1000",
-            },
-            {
-                "id":7,
-                "date":"02-02-2023",
-                "action":"Packaged",
-                "user":"aidenhuynh",
-                "item":"Markers",
-                "quantity":"300",
-            },
-            {
-                "id":8,
-                "date":"01-15-2023",
-                "action":"In Transit",
-                "user":"aidenhuynh",
-                "item":"Highlighters",
-                "quantity":"100",
-            },
-            {
-                "id":9,
-                "date":"01-05-2023",
-                "action":"Shipped",
-                "user":"aidenhuynh",
-                "item":"Pencils",
-                "quantity":"1500",
-            }   
-        ]
-    },
-    {
-        "uid":"TheGerbil21",
-        "userData":[
-            {
-                "id":1,
-                "date":"01-05-2023",
-                "action":"Shipped",
-                "user":"aidenhuynh",
-                "item":"Pencils",
-                "quantity":"1500",
-            },
-            {
-                "id":2,
-                "date":"02-07-2023",
-                "action":"Delivered",
-                "user":"TheGerbil21",
-                "item":"Pens",
-                "quantity":"1000",
-            },
-            {
-                "id":3,
-                "date":"02-02-2023",
-                "action":"Packaged",
-                "user":"aidenhuynh",
-                "item":"Markers",
-                "quantity":"300",
-            },
-            {
-                "id":4,
-                "date":"01-15-2023",
-                "action":"In Transit",
-                "user":"aidenhuynh",
-                "item":"Highlighters",
-                "quantity":"100",
-            },
-            {
-                "id":5,
-                "date":"01-05-2023",
-                "action":"Shipped",
-                "user":"aidenhuynh",
-                "item":"Pencils",
-                "quantity":"1500",
-            },
-        ]
-    },
-]
+# API docs https://flask-restful.readthedocs.io/en/latest/api.html
+api = Api(marketfake_api)
 
-class mainDataApi:
+class UserAPI:        
+    class _Create(Resource):
+        def post(self):
+            ''' Read data for json body '''
+            body = request.get_json()
+            
+            ''' Avoid garbage in, error checking '''
+            # validate name
+            name = body.get('date')
+            uid = body.get('product')
+            password = body.get('cost')
+            dob = body.get('stock')
 
-    class _get(Resource):
+            ''' #1: Key code block, setup USER OBJECT '''
+            uo = User(name=name, 
+                      uid=uid)
+            
+            ''' Additional garbage error checking '''
+            # set password if provided
+            if password is not None:
+                uo.set_password(password)
+            # convert to date type
+            if dob is not None:
+                try:
+                    uo.dob = datetime.strptime(dob, '%Y-%m-%d').date()
+                except:
+                    return {'message': f'Date of birth format error {dob}, must be mm-dd-yyyy'}, 400
+            
+            ''' #2: Key Code block to add user to database '''
+            # create user in database
+            user = uo.create()
+            # success returns json of user
+            if user:
+                return jsonify(user.read())
+            # failure returns error
+            return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
+
+    class _Read(Resource):
         def get(self):
-            return data
-
-    class _append(Resource):
-        def post(self):
-            global data
-            body = request.get_data(..., True)
-            print(body)
-            data.append(body)
-            return data 
+            users = User.query.all()    # read/extract all users from database
+            json_ready = [user.read() for user in users]  # prepare output in json
+            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
     
-    class _remove(Resource):
-        def post(self):
-            global data
-            body = request.get_data(..., True)
-            data.remove(body)
-            return data
+    class _Security(Resource):
 
-    api.add_resource(_get, '/')
-    api.add_resource(_append, '/PUT')
-    api.add_resource(_remove, '/DELETE')
+        def post(self):
+            ''' Read data for json body '''
+            body = request.get_json()
+            
+            ''' Get Data '''
+            uid = body.get('date')
+            if uid is None or len(uid) < 2:
+                return {'message': f'User ID is missing, or is less than 2 characters'}, 400
+            password = body.get('product')
+            
+            ''' Find user '''
+            user = User.query.filter_by(_uid=uid).first()
+            if user is None or not user.is_password(password):
+                return {'message': f"Invalid user id or password"}, 400
+            
+            ''' authenticated user '''
+            return jsonify(user.read())
+
+            
+
+    # building RESTapi endpoint
+    api.add_resource(_Create, '/create')
+    api.add_resource(_Read, '/')
+    api.add_resource(_Security, '/authenticate')
