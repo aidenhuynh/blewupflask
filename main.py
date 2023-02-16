@@ -2,7 +2,7 @@ import threading
 
 # import "packages" from flask
 from flask import render_template  # import render_template from "public" flask libraries
-
+from flask_cors import CORS
 # import "packages" from "this" project
 from __init__ import app, db  # Definitions initialization
 from api.apireal import mainData
@@ -27,16 +27,19 @@ def stub():
 
 
 @app.before_first_request
-def activate_job():
+
+def init_db():
     with app.app_context():
         db.create_all()
         print("test")
         initUsers()
-        initUsers()
         init_inventory()
+
+
 # this runs the application on the development server
 if __name__ == "__main__":
     # change name for testing
-    from flask_cors import CORS
+    db.init_app(app)
     cors = CORS(app)
-    app.run(debug=True, host="0.0.0.0", port="8086") 
+    app.run(debug=True, host="0.0.0.0", port="8080") 
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"

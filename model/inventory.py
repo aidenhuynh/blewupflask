@@ -6,10 +6,10 @@ import random
 class InventoryEntry(db.Model):
     __tablename__ = "inventory"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String, primary_key=True)
     _company = Column(String(255), nullable=False)
     _inventory_name = Column(String(255), nullable=False)
-    _action = Column(Integer, nullable=False)
+    _action = Column(String, nullable=False)
     _quantity = Column(Integer, nullable=False)
     _extra_notes = Column(String(255), nullable=False)
 
@@ -91,9 +91,9 @@ def init_inventory():
     if not inventory_table_empty():
         return
 
-    entry1 = InventoryEntry("Company A", "Product A", "Shipped", 150, "out for shipment")
-    entry2 = InventoryEntry("Company B", "Product B", "Delivery", 250, "out for delivery")
-    entry3 = InventoryEntry("Company C", "Product C", "Packaged", 350, "ready for delivery")
+    entry1 = InventoryEntry("Company A", "Product A", "Cargo", "Shipped", 150, "out for shipment")
+    entry2 = InventoryEntry("Company B", "Product B","Cargo", "Delivery", 250, "out for delivery")
+    entry3 = InventoryEntry("Company C", "Product C","Cargo", "Packaged", 350, "ready for delivery")
 
     inventory_entries = [entry1, entry2, entry3]
 
