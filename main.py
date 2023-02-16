@@ -32,14 +32,14 @@ def stub():
 @app.before_first_request
 
 def init_db():
-    with app.app_context():
-        db.create_all()
-        print("test")
+    # with # app.app_context():
+      # db.init_app(app)
+      # db.create_all()
+        #  # print("test")
         initUsers()
       # init_inventory()
 
 if __name__ == "__main__":
     # change name for testing
-    db.init_app(app)
     cors = CORS(app)
     app.run(debug=True, host="0.0.0.0", port="8080")
