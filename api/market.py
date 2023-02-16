@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse
 from __init__ import db
 from model.market import MarketEntry
 
-market_bp = Blueprint("market", __name__)
+market_bp = Blueprint("market", __name__, url_prefix='/api/market')
 market_api = Api(market_bp)
 
 
