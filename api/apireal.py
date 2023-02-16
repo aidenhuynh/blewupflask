@@ -138,15 +138,17 @@ class mainDataApi:
             return data
 
     class _append(Resource):
-        def post(self):
+        def put(self):
             global data
             body = request.get_data(..., True)
             print(body)
-            data.append(body)
-            return data 
+            key = body[0]
+            newData = body[1]
+            data[key]["userData"].append(newData)
+            return data
     
     class _remove(Resource):
-        def post(self):
+        def remove(self):
             global data
             body = request.get_data(..., True)
             data.remove(body)
