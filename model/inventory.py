@@ -4,29 +4,28 @@ import random
 
 
 class InventoryEntry(db.Model):
-    __tablename__ = "Inventory"
+    __tablename__ = "inventory"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String, primary_key=True)
     _company = Column(String(255), nullable=False)
     _inventory_name = Column(String(255), nullable=False)
-    _action = Column(Integer, nullable=False)
+    _action = Column(String, nullable=False)
     _quantity = Column(Integer, nullable=False)
     _extra_notes = Column(String(255), nullable=False)
 
     def __init__(self, company, inventory_name, action, quantity, extra_notes):
         self._company = company
         self._inventory_name = inventory_name
-        self._action = action
+        self._caction = action
         self._quantity = quantity
         self._extra_notes = extra_notes
 
     def __repr__(self):
         return (
-            "<InventoryEntry(id='%s', company='%s', inventory_name='%s', action='%s', quantity='%s', extra_notes='%s')>"
+            "<InventoryEntry(id='%s', company='%s', action='%s', quantity='%s', extra_notes='%s')>"
             % (
                 self.id,
                 self.company,
-                self.inventory_name,
                 self.action,
                 self.quantity,
                 self.extra_notes,
@@ -35,7 +34,7 @@ class InventoryEntry(db.Model):
 
     @property
     def company(self):
-        return self.company
+        return self._company
 
     @company.setter
     def company(self, value):
@@ -92,9 +91,9 @@ def init_inventory():
     if not inventory_table_empty():
         return
 
-    entry1 = InventoryEntry("Company A", "Product A", "Shipped", 150, "out for delivery")
-    entry2 = InventoryEntry("Company B", "Product B", "Delivered", 200, "out for pick-up")
-    entry3 = InventoryEntry("Company C", "Product C", "Stored", 250, "in for storage")
+    entry1 = InventoryEntry("Company A", "Product A", "Cargo", "Shipped", 150, "out for shipment")
+    entry2 = InventoryEntry("Company B", "Product B","Cargo", "Delivery", 250, "out for delivery")
+    entry3 = InventoryEntry("Company C", "Product C","Cargo", "Packaged", 350, "ready for delivery")
 
     inventory_entries = [entry1, entry2, entry3]
 

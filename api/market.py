@@ -1,88 +1,88 @@
-import json
-from flask import Blueprint, request, jsonify
-from flask_restful import Api, Resource # used for REST API building
-from datetime import datetime
+from flask import Blueprint, request
+from flask_restful import Api, Resource, reqparse
+from __init__ import db
+from model.market import MarketEntry
 
-from model.users import User
+market_bp = Blueprint("market", __name__, url_prefix='/api/market')
+market_api = Api(market_bp)
 
-market_api = Blueprint('market_api', __name__,
-                   url_prefix='/api/market')
 
-# API docs https://flask-restful.readthedocs.io/en/latest/api.html
-api = Api(market_api)
+class MarketAPI(Resource):
+    def get(self):
+        date = request.args.get("date")
+        entry = db.session.query(MarketEntry).filter_by(_date=date).all()
+        print("abc" + str(date))
+        if len(entry) != 0:
+            return [e.to_dict() for e in entry]
+        return {"error": "date not found"}, 404
 
-class UserAPI:        
-    class _Create(Resource):
-        def post(self):
-            ''' Read data for json body '''
-            body = request.get_json()
-            
-            ''' Avoid garbage in, error checking '''
-            # validate name
-            name = body.get('date')
-            if name is None or len(name) < 2:
-                return {'message': f'Name is missing, or is less than 2 characters'}, 400
-            # validate uid
-            uid = body.get('product')
-            if uid is None or len(uid) < 2:
-                return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-            # look for password and dob 
-            password = body.get('cost')
-            dob = body.get('stock')
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("date", required=True, type=str)
+        parser.add_argument("product", required=True, type=str)
+        parser.add_argument("cost", required=True, type=int)
+        parser.add_argument("stock", required=True, type=int)
+        parser.add_argument("market_name", required=True, type=str)
+        args = parser.parse_args()
 
-            ''' #1: Key code block, setup USER OBJECT '''
-            uo = User(name=name, 
-                      uid=uid)
-            
-            ''' Additional garbage error checking '''
-            # set password if provided
-            if password is not None:
-                uo.set_password(password)
-            # convert to date type
-            if dob is not None:
-                try:
-                    uo.dob = datetime.strptime(dob, '%Y-%m-%d').date()
-                except:
-                    return {'message': f'Date of birth format error {dob}, must be mm-dd-yyyy'}, 400
-            
-            ''' #2: Key Code block to add user to database '''
-            # create user in database
-            user = uo.create()
-            # success returns json of user
-            if user:
-                return jsonify(user.read())
-            # failure returns error
-            return {'message': f'Processed {name}, either a format error or User ID {uid} is duplicate'}, 400
+        entry = MarketEntry(
+            args["date"],
+            args["product"],
+            args["cost"],
+            args["stock"],
+        )
+        try:
+            db.session.add(entry)
+            db.session.commit()
+            return entry.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
 
-    class _Read(Resource):
-        def get(self):
-            users = User.query.all()    # read/extract all users from database
-            json_ready = [user.read() for user in users]  # prepare output in json
-            return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
-    
-    class _Security(Resource):
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", required=True, type=int)
+        parser.add_argument("product", required=False, type=str)
+        parser.add_argument("cost", required=False, type=int)
+        parser.add_argument("stock", required=False, type=int)
+        parser.add_argument("market_name", required=True, type=str)
+        args = parser.parse_args()
 
-        def post(self):
-            ''' Read data for json body '''
-            body = request.get_json()
-            
-            ''' Get Data '''
-            uid = body.get('product')
-            if uid is None or len(uid) < 2:
-                return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-            password = body.get('password')
-            
-            ''' Find user '''
-            user = User.query.filter_by(_uid=uid).first()
-            if user is None or not user.is_password(password):
-                return {'message': f"Invalid user id or password"}, 400
-            
-            ''' authenticated user '''
-            return jsonify(user.read())
+        try:
+            entry = db.session.query(MarketEntry).get(args["id"])
+            if entry:
+                if args["product"]:
+                    entry.calories = args["product"]
+                if args["cost"]:
+                    entry.protein = args["cost"]
+                if args["stock"]:
+                    entry.extra_notes = args["stock"]
+                if args["market_name"]:
+                    entry.extra_notes = args["market_name"]
+                db.session.commit()
+                return entry.to_dict()
+            else:
+                return {"error": "entry not found"}, 404
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
 
-            
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", required=True, type=int)
+        args = parser.parse_args()
 
-    # building RESTapi endpoint
-    api.add_resource(_Create, '/create')
-    api.add_resource(_Read, '/')
-    api.add_resource(_Security, '/authenticate')
+        try:
+            entry = db.session.query(MarketEntry).get(args["id"])
+            if entry:
+                db.session.delete(entry)
+                db.session.commit()
+                return entry.to_dict()
+            else:
+                return {"error": "entry not found"}, 404
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
+
+
+market_api.add_resource(MarketAPI, "/market")

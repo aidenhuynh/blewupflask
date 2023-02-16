@@ -27,6 +27,7 @@ class InventoryAPI(Resource):
 
         entry = InventoryEntry(
             args["company"],
+            args["inventory_name"],
             args["action"],
             args["quantity"],
             args["extra_notes"],
