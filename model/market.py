@@ -1,107 +1,88 @@
-from sqlalchemy import Column, Integer, String
+from flask import Blueprint, request
+from flask_restful import Api, Resource, reqparse
 from __init__ import db
-import random
+from model.market import MarketEntry
+
+market_bp = Blueprint("market", __name__)
+market_api = Api(market_bp)
 
 
-class MarketEntry(db.Model):
-    __tablename__ = "Market"
+class MarketAPI(Resource):
+    def get(self):
+        date = request.args.get("date")
+        entry = db.session.query(MarketEntry).filter_by(_date=date).all()
+        print("abc" + str(date))
+        if len(entry) != 0:
+            return [e.to_dict() for e in entry]
+        return {"error": "date not found"}, 404
 
-    id = Column(Integer, primary_key=True)
-    _date = Column(String(255), nullable=False)
-    _market_name = Column(String(255), nullable=False)
-    _product = Column(Integer, nullable=False)
-    _cost = Column(Integer, nullable=False)
-    _stock = Column(String(255), nullable=False)
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("date", required=True, type=str)
+        parser.add_argument("product", required=True, type=str)
+        parser.add_argument("cost", required=True, type=int)
+        parser.add_argument("stock", required=True, type=int)
+        parser.add_argument("market_name", required=True, type=str)
+        args = parser.parse_args()
 
-    def __init__(self, date, market_name, product, cost, stock):
-        self._date = date
-        self._market_name = market_name
-        self._product = product
-        self._cost = cost
-        self._stock = stock
-
-    def __repr__(self):
-        return (
-            "<MarketEntry(id='%s', date='%s', market_name='%s', product='%s', cost='%s', stock='%s')>"
-            % (
-                self.id,
-                self.date,
-                self.market_name,
-                self.product,
-                self.cost,
-                self.stock,
-            )
+        entry = MarketEntry(
+            args["date"],
+            args["product"],
+            args["cost"],
+            args["stock"],
         )
-
-    @property
-    def date(self):
-        return self.date
-
-    @date.setter
-    def date(self, value):
-        self._date = value
-
-    @property
-    def market_name(self):
-        return self._market_name
-
-    @market_name.setter
-    def market_name(self, value):
-        self._market_name = value
-
-    @property
-    def product(self):
-        return self._product
-
-    @product.setter
-    def product(self, value):
-        self._product = value
-
-    @property
-    def cost(self):
-        return self._cost
-
-    @cost.setter
-    def cost(self, value):
-        self._cost = value
-
-    @property
-    def stock(self):
-        return self._stock
-
-    @stock.setter
-    def stock(self, value):
-        self._stock = value
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "product": self.product,
-            "date": self.date,
-            "cost": self.cost,
-            "stock": self.stock,
-            "market_name": self.market_name,
-        }
-
-
-def market_table_empty():
-    return len(db.session.query(MarketEntry).all()) == 0
-
-
-def init_market():
-    if not market_table_empty():
-        return
-
-    entry1 = MarketEntry("Company A", "Product A", "Shipped", 150, "out for delivery")
-    entry2 = MarketEntry("Company B", "Product B", "Delivered", 200, "out for pick-up")
-    entry3 = MarketEntry("Company C", "Product C", "Stored", 250, "in for storage")
-
-    market_entries = [entry1, entry2, entry3]
-
-    for entry in market_entries:
         try:
             db.session.add(entry)
             db.session.commit()
+            return entry.to_dict(), 201
         except Exception as e:
-            print("error while creating entries: " + str(e))
             db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", required=True, type=int)
+        parser.add_argument("product", required=False, type=str)
+        parser.add_argument("cost", required=False, type=int)
+        parser.add_argument("stock", required=False, type=int)
+        parser.add_argument("market_name", required=True, type=str)
+        args = parser.parse_args()
+
+        try:
+            entry = db.session.query(MarketEntry).get(args["id"])
+            if entry:
+                if args["product"]:
+                    entry.calories = args["product"]
+                if args["cost"]:
+                    entry.protein = args["cost"]
+                if args["stock"]:
+                    entry.extra_notes = args["stock"]
+                if args["market_name"]:
+                    entry.extra_notes = args["market_name"]
+                db.session.commit()
+                return entry.to_dict()
+            else:
+                return {"error": "entry not found"}, 404
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
+
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", required=True, type=int)
+        args = parser.parse_args()
+
+        try:
+            entry = db.session.query(MarketEntry).get(args["id"])
+            if entry:
+                db.session.delete(entry)
+                db.session.commit()
+                return entry.to_dict()
+            else:
+                return {"error": "entry not found"}, 404
+        except Exception as e:
+            db.session.rollback()
+            return {"error": f"server error: {e}"}, 500
+
+
+market_api.add_resource(MarketAPI, "/market")
