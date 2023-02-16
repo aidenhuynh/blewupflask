@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource 
-import requests
+import requests, json
 
 mainData = Blueprint('bruh', __name__, url_prefix='/api/mainData')
 
@@ -14,7 +14,6 @@ data = [
                 "id":1,
                 "date":"01-05-2023",
                 "action":"Shipped",
-                "user":"aidenhuynh",
                 "item":"Pencils",
                 "quantity":"1500",
             },
@@ -22,7 +21,6 @@ data = [
                 "id":2,
                 "date":"02-07-2023",
                 "action":"Delivered",
-                "user":"TheGerbil21",
                 "item":"Pens",
                 "quantity":"1000",
             },
@@ -30,7 +28,6 @@ data = [
                 "id":3,
                 "date":"02-02-2023",
                 "action":"Packaged",
-                "user":"aidenhuynh",
                 "item":"Markers",
                 "quantity":"300",
             },
@@ -38,7 +35,6 @@ data = [
                 "id":4,
                 "date":"01-15-2023",
                 "action":"In Transit",
-                "user":"aidenhuynh",
                 "item":"Highlighters",
                 "quantity":"100",
             },
@@ -46,7 +42,6 @@ data = [
                 "id":5,
                 "date":"01-05-2023",
                 "action":"Shipped",
-                "user":"aidenhuynh",
                 "item":"Pencils",
                 "quantity":"1500",
             },
@@ -54,7 +49,6 @@ data = [
                 "id":6,
                 "date":"02-07-2023",
                 "action":"Delivered",
-                "user":"TheGerbil21",
                 "item":"Pens",
                 "quantity":"1000",
             },
@@ -62,7 +56,6 @@ data = [
                 "id":7,
                 "date":"02-02-2023",
                 "action":"Packaged",
-                "user":"aidenhuynh",
                 "item":"Markers",
                 "quantity":"300",
             },
@@ -70,7 +63,6 @@ data = [
                 "id":8,
                 "date":"01-15-2023",
                 "action":"In Transit",
-                "user":"aidenhuynh",
                 "item":"Highlighters",
                 "quantity":"100",
             },
@@ -78,7 +70,6 @@ data = [
                 "id":9,
                 "date":"01-05-2023",
                 "action":"Shipped",
-                "user":"aidenhuynh",
                 "item":"Pencils",
                 "quantity":"1500",
             }   
@@ -91,7 +82,6 @@ data = [
                 "id":1,
                 "date":"01-05-2023",
                 "action":"Shipped",
-                "user":"aidenhuynh",
                 "item":"Pencils",
                 "quantity":"1500",
             },
@@ -99,7 +89,6 @@ data = [
                 "id":2,
                 "date":"02-07-2023",
                 "action":"Delivered",
-                "user":"TheGerbil21",
                 "item":"Pens",
                 "quantity":"1000",
             },
@@ -107,7 +96,6 @@ data = [
                 "id":3,
                 "date":"02-02-2023",
                 "action":"Packaged",
-                "user":"aidenhuynh",
                 "item":"Markers",
                 "quantity":"300",
             },
@@ -115,7 +103,6 @@ data = [
                 "id":4,
                 "date":"01-15-2023",
                 "action":"In Transit",
-                "user":"aidenhuynh",
                 "item":"Highlighters",
                 "quantity":"100",
             },
@@ -123,7 +110,6 @@ data = [
                 "id":5,
                 "date":"01-05-2023",
                 "action":"Shipped",
-                "user":"aidenhuynh",
                 "item":"Pencils",
                 "quantity":"1500",
             },
@@ -137,23 +123,28 @@ class mainDataApi:
         def get(self):
             return data
 
-    class _append(Resource):
+    class _put(Resource):
         def put(self):
             global data
             body = request.get_data(..., True)
-            print(body)
-            key = body[0]
-            newData = body[1]
-            data[key]["userData"].append(newData)
+            parsed = json.loads(body)
+            print(parsed)
+            key = parsed[0]
+            newData = parsed[1]
+            data[int(key)]["userData"].append(newData)
             return data
     
-    class _remove(Resource):
+    class _delete(Resource):
         def remove(self):
             global data
             body = request.get_data(..., True)
-            data.remove(body)
+            parsed = json.loads(body)
+            print(parsed)
+            key = parsed[0]
+            id = parsed[1]
+            data[int(key)]["userData"].remove(id)
             return data
 
     api.add_resource(_get, '/')
-    api.add_resource(_append, '/PUT')
-    api.add_resource(_remove, '/DELETE')
+    api.add_resource(_put, '/PUT')
+    api.add_resource(_delete, '/DELETE')

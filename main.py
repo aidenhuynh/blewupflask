@@ -1,7 +1,7 @@
 import threading
 
 # import "packages" from flask
-from flask import render_template  # import render_template from "public" flask libraries
+from flask import Flask, render_template  # import render_template from "public" flask libraries
 
 # import "packages" from "this" project
 from __init__ import app  # Definitions initialization
@@ -32,6 +32,8 @@ if __name__ == "__main__":
     from flask_cors import CORS
     cors = CORS(app)
     app.run(debug=True, host="0.0.0.0", port="8086") 
+    
+Flask(__name__).config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
 
 # attention gamers, run the following command in terminal
 # pip install Flask-Cors
