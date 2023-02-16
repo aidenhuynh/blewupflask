@@ -12,6 +12,9 @@ from projects.projects import app_projects # Blueprint directory import projects
 
 from model.users import initUsers
 from api.inventory import inventory_bp
+
+app.register_blueprint(inventory_bp)
+
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
     # note that we set the 404 status explicitly
@@ -41,5 +44,5 @@ if __name__ == "__main__":
     # change name for testing
     db.init_app(app)
     cors = CORS(app)
-    app.run(debug=True, host="0.0.0.0", port="8080") 
+    app.run(debug=True, host="127.0.0.1", port="8080") 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
