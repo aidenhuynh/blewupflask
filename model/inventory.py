@@ -105,10 +105,15 @@ def init_inventory():
         return
 
     entry1 = InventoryEntry("Company A", "Product A", "Cargo", "Shipped", 150, "out for shipment")
-    entry2 = InventoryEntry("Company B", "Product B","Cargo", "Delivery", 250, "out for delivery")
-    entry3 = InventoryEntry("Company C", "Product C", "Cargo", "Packaged", 350, "ready for delivery")
+    entry2 = InventoryEntry("Company A", "Product 1A", "Packages", "Delivery", 150, "out for shipment")
+    entry3 = InventoryEntry("Company B", "Product B","Cargo", "Delivery", 250, "out for delivery")
+    entry4 = InventoryEntry("Company B", "Product 1B","Pallets", "Delivery", 30, "shipped")
+    entry5 = InventoryEntry("Company C", "Product C", "Cargo", "Packaged", 350, "ready for delivery")
+    entry5 = InventoryEntry("Company D", "Product D", "Cargo", "Packaged", 550, "ready for delivery")
 
-    inventory_entries = [entry1, entry2, entry3]
+
+
+    inventory_entries = [entry1, entry2, entry3, entry4, entry5]
 
     for entry in inventory_entries:
         try:

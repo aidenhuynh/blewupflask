@@ -10,15 +10,8 @@ from api.apireal import mainData
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
-<<<<<<< HEAD
-from model.users import initUsers
-from api.inventory import inventory_bp
-
-app.register_blueprint(inventory_bp)
-=======
 app.register_blueprint(app_projects) # register app pages
 app.register_blueprint(mainData)
->>>>>>> 71434f4bf949bc7cc924d376aa22986001f78599
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
@@ -38,12 +31,7 @@ if __name__ == "__main__":
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app)
-<<<<<<< HEAD
-    app.run(debug=True, host="127.0.0.1", port="8080") 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
-=======
-    app.run(debug=True, host="0.0.0.0", port="8086") 
+    app.run(debug=True, host="0.0.0.0", port="8086")
 
 # attention gamers, run the following command in terminal
 # pip install Flask-Cors
->>>>>>> 71434f4bf949bc7cc924d376aa22986001f78599
