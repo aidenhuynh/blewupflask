@@ -4,12 +4,14 @@ import threading
 from flask import render_template  # import render_template from "public" flask libraries
 
 # import "packages" from "this" project
-from __init__ import app  # Definitions initialization
+from __init__ import app, db  # Definitions initialization
 from api.apireal import mainData
-
+from model.inventory import init_inventory
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
+from model.users import initUsers
+from api.inventory import inventory_bp
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
     # note that we set the 404 status explicitly
@@ -23,9 +25,18 @@ def index():
 def stub():
     return render_template("stub.html")
 
+
+@app.before_first_request
+def activate_job():
+    with app.app_context():
+        db.create_all()
+        print("test")
+        initUsers()
+        initUsers()
+        init_inventory()
 # this runs the application on the development server
 if __name__ == "__main__":
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app)
-    app.run(debug=True, host="0.0.0.0", port="8000") 
+    app.run(debug=True, host="0.0.0.0", port="8086") 
