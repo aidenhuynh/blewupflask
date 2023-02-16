@@ -38,11 +38,8 @@ def init_db():
         initUsers()
         init_inventory()
 
-
-# this runs the application on the development server
 if __name__ == "__main__":
     # change name for testing
     db.init_app(app)
     cors = CORS(app)
-    app.run(debug=True, host="127.0.0.1", port="8080") 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
+    app.run(debug=True, host="0.0.0.0", port="8086")
