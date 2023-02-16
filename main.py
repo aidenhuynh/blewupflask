@@ -42,4 +42,4 @@ if __name__ == "__main__":
     # change name for testing
     db.init_app(app)
     cors = CORS(app)
-    app.run(debug=True, host="0.0.0.0", port="8086")
+    app.run(debug=True, host="0.0.0.0", port="8080")
