@@ -1,7 +1,8 @@
 import threading
-
 # import "packages" from flask
 from flask import render_template  # import render_template from "public" flask libraries
+from flask import Flask, jsonify
+import sqlite3
 from flask_cors import CORS
 # import "packages" from "this" project
 from __init__ import app, db  # Definitions initialization
@@ -28,6 +29,14 @@ def index():
 def stub():
     return render_template("stub.html")
 
+@app.route("/api/phone")
+def get_phone_data():
+    conn = sqlite3.connect("api/sqlites.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM phone")
+    rows = c.fetchall()
+    conn.close()
+    return jsonify(rows)
 
 @app.before_first_request
 
