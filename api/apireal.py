@@ -135,14 +135,16 @@ class mainDataApi:
             return data
     
     class _delete(Resource):
-        def remove(self):
+        def delete(self):
             global data
             body = request.get_data(..., True)
             parsed = json.loads(body)
             print(parsed)
             key = parsed[0]
             id = parsed[1]
-            data[int(key)]["userData"].remove(id)
+            for n in data[key]["userData"]:
+                if n["id"] == id:
+                    data[key]["userData"].remove(n)
             return data
 
     api.add_resource(_get, '/')

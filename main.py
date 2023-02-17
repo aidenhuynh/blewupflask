@@ -10,6 +10,7 @@ from api.apireal import mainData
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 
+
 app.register_blueprint(app_projects) # register app pages
 app.register_blueprint(mainData)
 
@@ -30,10 +31,14 @@ def stub():
 if __name__ == "__main__":
     # change name for testing
     from flask_cors import CORS
-    cors = CORS(app)
+    cors = CORS(app, support_credentials=True)
     app.run(debug=True, host="0.0.0.0", port="8086") 
     
-Flask(__name__).config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
+toptext = Flask(__name__)
+
+toptext.config['CORS_ALLOW_HEADERS'] = 'Content-Type'
+toptext.config['CORS_METHODS'] = ['PUT', 'GET', 'REMOVE']
+toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
 
 # attention gamers, run the following command in terminal
 # pip install Flask-Cors
