@@ -4,45 +4,49 @@ import random
 
 
 class InventoryEntry(db.Model):
-    __tablename__ = "inventory"
+    __tablename__ = "inventories"
 
     id = Column(Integer, primary_key=True)
-    _company = Column(String(255), nullable=False)
-    _product = Column(String(255), nullable=False)
+    _username = Column(String(255), nullable=False)
     _inventory_name = Column(String(255), nullable=False)
-    _action = Column(String, nullable=False)
     _quantity = Column(Integer, nullable=False)
-    _status = Column(String(255), nullable=False)
+    _price = Column(Integer, nullable=False)
+    _cost = Column(Integer, nullable=False)
+    _delivery = Column(Integer, nullable=False)
+    _extra_notes = Column(String(255), nullable=False)
 
-    def __init__(self, company, product, inventory_name, action, quantity, status):
-        self._company = company
-        self._product = product
+    def __init__(self, username, inventory_name, quantity, price, cost, delivery, extra_notes):
+        self._username = username
         self._inventory_name = inventory_name
-        self._action = action
         self._quantity = quantity
-        self._status = status
+        self._price = price
+        self._cost = cost
+        self._delivery = delivery
+        self._extra_notes = extra_notes
+
 
     def __repr__(self):
         return (
-            "<InventoryEntry(id='%s', company='%s', product='%s', inventory_name='%s', action='%s', quantity='%s', status='%s')>"
+            "<FitnessEntry(id='%s', username='%s', quantity='%s', price='%s', cost='%s', delivery='%s', extra_notes='%s')>"
             % (
                 self.id,
-                self.company,
-                self.product,
-                self.inventory_name,
-                self.action,
+                self.username,
                 self.quantity,
-                self.status,
+                self.price,
+                self.cost,
+                self.delivery,
+                self.extra_notes,
             )
         )
 
-    @property
-    def product(self):
-        return self._product
 
-    @product.setter
-    def product_set(self, value):
-        self._product = value
+    @property
+    def username(self):
+        return self._username
+
+    @username.setter
+    def username(self, value):
+        self._username = value
 
     @property
     def inventory_name(self):
@@ -53,14 +57,6 @@ class InventoryEntry(db.Model):
         self._inventory_name = value
 
     @property
-    def action(self):
-        return self._action
-
-    @action.setter
-    def action(self, value):
-        self._action = value
-
-    @property
     def quantity(self):
         return self._quantity
 
@@ -69,44 +65,62 @@ class InventoryEntry(db.Model):
         self._quantity = value
 
     @property
-    def status(self):
-        return self._status
+    def price(self):
+        return self._price
 
-    @status.setter
-    def status(self, value):
-        self._status = value
+    @price.setter
+    def price(self, value):
+        self._price = value
 
     @property
-    def company(self):
-        return self._company
+    def cost(self):
+        return self._cost
 
-    @company.setter
-    def company(self, company):
-        self._company = company
+    @cost.setter
+    def cost(self, value):
+        self._cost = value
+
+    @property
+    def delivery(self):
+        return self._delivery
+
+    @delivery.setter
+    def delivery(self, value):
+        self._delivery = value
+
+    @property
+    def extra_notes(self):
+        return self._extra_notes
+
+    @extra_notes.setter
+    def extra_notes(self, value):
+        self._extra_notes = value
 
     def to_dict(self):
         return {
             "id": self.id,
-            "company": self.company,
-            "product": self.product,
-            "action": self.action,
+            "username": self.username,
             "quantity": self.quantity,
-            "status": self.status,
+            "price": self.price,
+            "cost": self.cost,
+            "delivery": self.delivery,
+            "extra_notes": self.extra_notes,
             "inventory_name": self.inventory_name,
         }
-
 
 def inventory_table_empty():
     return len(db.session.query(InventoryEntry).all()) == 0
 
 
-def init_inventory():
+def init_inventories():
     if not inventory_table_empty():
         return
 
-    entry1 = InventoryEntry("Company A", "Product A", "Cargo", "Shipped", 150, "out for shipment")
-    entry2 = InventoryEntry("Company B", "Product B","Cargo", "Delivery", 250, "out for delivery")
-    entry3 = InventoryEntry("Company C", "Product C", "Cargo", "Packaged", 350, "ready for delivery")
+    entry1 = InventoryEntry("Company A", "Product A", 2000, 150, 70, 150, "shipped")
+    entry2 = InventoryEntry(
+        "Company B", "Product B", 1700, 120, 50, 100, "out for pickup"
+    )
+    entry3 = InventoryEntry("Company C", "Product C", 1500, 200, 80, 200, "shipped")
 
     inventory_entries = [entry1, entry2, entry3]
 

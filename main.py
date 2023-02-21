@@ -7,16 +7,14 @@ from flask_cors import CORS
 # import "packages" from "this" project
 from __init__ import app, db  # Definitions initialization
 from api.apireal import mainData
-from model.inventory import init_inventory
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
-
-
-
 from model.users import initUsers
-from api.inventory import inventory_bp
 
-app.register_blueprint(inventory_bp)
+from model.inventory import init_inventories
+
+from api.inventory import inventories_bp
+app.register_blueprint(inventories_bp)
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
@@ -41,16 +39,15 @@ def get_phone_data():
     return jsonify(rows)
 
 @app.before_first_request
-
-def init_db():
-    # with # app.app_context():
-      # db.init_app(app)
-      # db.create_all()
-        #  # print("test")
-        initUsers()
-      # init_inventory()
+def activate_job():
+    with app.app_context():
+        db.create_all()
+        print("test")
+        init_inventories()
+      
 
 if __name__ == "__main__":
+    db.init_app(app)
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app, support_credentials=True)
