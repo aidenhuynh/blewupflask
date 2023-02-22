@@ -122,8 +122,10 @@ def init_inventories():
     )
     entry3 = InventoryEntry("Company C", "Product C", 1500, 200, 80, 200, "shipped")
     entry4 = InventoryEntry("Company D", "Product D", 100, 20, 8, 20, "shipped")
+    entry5 = InventoryEntry("Company A", "Product 1A", 10, 2, 800, 2, "delivered")
 
-    inventory_entries = [entry1, entry2, entry3, entry4]
+
+    inventory_entries = [entry1, entry2, entry3, entry4, entry5]
 
     for entry in inventory_entries:
         try:
