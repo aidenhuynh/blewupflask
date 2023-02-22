@@ -10,10 +10,11 @@ from api.apireal import mainData
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 from model.users import initUsers
-
+from api.user import user_api
 from model.inventory import init_inventories
 
 from api.inventory import inventories_bp
+app.register_blueprint(user_api)
 app.register_blueprint(inventories_bp)
 
 @app.errorhandler(404)  # catch for URL not found
@@ -43,6 +44,8 @@ def activate_job():
     with app.app_context():
         db.create_all()
         print("test")
+        initUsers()
+        initUsers()
         init_inventories()
       
 
