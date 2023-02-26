@@ -44,7 +44,7 @@ def activate_job():
     with app.app_context():
         # db.create_all()
         # print("test")
-        #initUsers()
+        # initUsers()
         # initUsers()
         # init_inventories()
       
