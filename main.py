@@ -43,10 +43,10 @@ def get_phone_data():
 def activate_job():
     with app.app_context():
         # db.create_all()
-        print("test")
-        initUsers()
-        initUsers()
-        init_inventories()
+        # print("test")
+        #initUsers()
+        # initUsers()
+        # init_inventories()
       
 
 if __name__ == "__main__":
