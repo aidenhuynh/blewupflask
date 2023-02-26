@@ -39,9 +39,9 @@ def get_phone_data():
     conn.close()
     return jsonify(rows)
 
-@app.before_first_request
-def activate_job():
-    with app.app_context():
+# @app.before_first_request
+# def activate_job():
+    # with app.app_context():
         # db.create_all()
         # print("test")
         # initUsers()
