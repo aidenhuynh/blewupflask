@@ -39,14 +39,14 @@ def get_phone_data():
     conn.close()
     return jsonify(rows)
 
-@app.before_first_request
-def activate_job():
-    with app.app_context():
-        db.create_all()
-        print("test")
-        initUsers()
-        initUsers()
-        init_inventories()
+# @app.before_first_request
+# def activate_job():
+    # with app.app_context():
+        # db.create_all()
+        # print("test")
+        # initUsers()
+        # initUsers()
+        # init_inventories()
       
 
 if __name__ == "__main__":
