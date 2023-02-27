@@ -30,15 +30,6 @@ def index():
 def stub():
     return render_template("stub.html")
 
-@app.route("/api/phone")
-def get_phone_data():
-    conn = sqlite3.connect("api/sqlites.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM phone")
-    rows = c.fetchall()
-    conn.close()
-    return jsonify(rows)
-
 # @app.before_first_request
 # def activate_job():
     # with app.app_context():
