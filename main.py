@@ -38,7 +38,26 @@ def stub():
         # initUsers()
         # initUsers()
         # init_inventories()
-      
+
+@app.route('/api/phone')
+def phone():
+    conn = sqlite3.connect('api/sqlites.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM phone")
+    rows = c.fetchall()
+    conn.close()
+
+    data = []
+    for row in rows:
+        data.append({
+            "user_id": row[0],
+            "phone_number": row[1],
+            "location": row[2],
+            "timezone": row[3],
+            "time": row[4]
+        })
+
+    return jsonify(data)
 
 if __name__ == "__main__":
     db.init_app(app)
