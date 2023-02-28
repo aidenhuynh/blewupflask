@@ -146,7 +146,28 @@ class mainDataApi:
                 if n["id"] == id:
                     data[key]["userData"].remove(n)
             return data
+        
+    class _patch(Resource):
+        def patch(self):
+            body = request.get_data(..., True)
+            parsed = json.loads(body)
+            print(parsed)
+            key = parsed[0]
+            id = parsed[1]
+            newData = parsed[2]
+            i = -1
+            for n in data[key]["userData"]:
+                i += 1
+                print(id)
+                print(n["id"])
+                if n["id"] == int(id):
+                    print("true")
+                    data[key]["userData"][i] = newData
+                else:
+                    print("false")
+            return data
 
     api.add_resource(_get, '/')
     api.add_resource(_put, '/PUT')
     api.add_resource(_delete, '/DELETE')
+    api.add_resource(_patch, '/PATCH')

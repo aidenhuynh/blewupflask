@@ -10,13 +10,11 @@ from api.apireal import mainData
 from model.inventory import init_inventory
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
-
-
-
 from model.users import initUsers
 from api.inventory import inventory_bp
 
 app.register_blueprint(inventory_bp)
+app.register_blueprint(mainData)
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
@@ -54,13 +52,15 @@ if __name__ == "__main__":
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app, support_credentials=True)
-    app.run(debug=True, host="0.0.0.0", port="8086") 
+    app.run(debug=True) 
     
 toptext = Flask(__name__)
 
 toptext.config['CORS_ALLOW_HEADERS'] = 'Content-Type'
-toptext.config['CORS_METHODS'] = ['PUT', 'GET', 'REMOVE']
-toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
+toptext.config['CORS_METHODS'] = ['PUT', 'GET', 'REMOVE', 'PATCH']
+# toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
+toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: https://aidenhuynh.github.io/'
+
 
 # attention gamers, run the following command in terminal
 # pip install Flask-Cors
