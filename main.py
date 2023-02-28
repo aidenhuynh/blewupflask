@@ -97,11 +97,10 @@ if __name__ == "__main__":
     
 toptext = Flask(__name__)
 
-toptext.config['CORS_ALLOW_HEADERS'] = 'Content-Type'
+toptext.config['CORS_ALLOW_HEADERS'] = ['Content-Type']
 toptext.config['CORS_METHODS'] = ['PUT', 'GET', 'REMOVE', 'PATCH']
-# toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
+toptext.config['CORS_HEADERS'] = ['Access-Control-Allow-Origin: http://0.0.0.0/4002/leuckblewup', 'Access-Control-Allow-Private-Network: true', 'Access-Control-Request-Private-Network: true']
 toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: https://aidenhuynh.github.io/leuckblewup'
-
 
 # attention gamers, run the following command in terminal
 # pip install Flask-Cors
