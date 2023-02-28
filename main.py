@@ -1,19 +1,26 @@
 import threading
 # import "packages" from flask
 from flask import render_template  # import render_template from "public" flask libraries
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 import sqlite3
+import phonenumbers
+from phonenumbers import geocoder, timezone
+import datetime
 from flask_cors import CORS
 # import "packages" from "this" project
 from __init__ import app, db  # Definitions initialization
 from api.apireal import mainData
-from model.inventory import init_inventory
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
 from model.users import initUsers
-from api.inventory import inventory_bp
+from api.user import user_api
+from model.inventory import init_inventories
 
-app.register_blueprint(inventory_bp)
+
+
+from api.inventory import inventories_bp
+app.register_blueprint(user_api)
+app.register_blueprint(inventories_bp)
 app.register_blueprint(mainData)
 
 @app.errorhandler(404)  # catch for URL not found
@@ -29,26 +36,60 @@ def index():
 def stub():
     return render_template("stub.html")
 
-@app.route("/api/phone")
-def get_phone_data():
-    conn = sqlite3.connect("api/sqlites.db")
+# @app.before_first_request
+# def activate_job():
+    # with app.app_context():
+        # db.create_all()
+        # print("test")
+        # initUsers()
+        # initUsers()
+        # init_inventories()
+
+@app.route('/api/phone')
+def phone():
+    conn = sqlite3.connect('api/sqlites.db')
     c = conn.cursor()
     c.execute("SELECT * FROM phone")
     rows = c.fetchall()
     conn.close()
-    return jsonify(rows)
 
-@app.before_first_request
+    data = []
+    for row in rows:
+        data.append({
+            "user_id": row[0],
+            "phone_number": row[1],
+            "location": row[2],
+            "timezone": row[3],
+            "time": row[4]
+        })
 
-def init_db():
-    # with # app.app_context():
-      # db.init_app(app)
-      # db.create_all()
-        #  # print("test")
-        initUsers()
-      # init_inventory()
+    return jsonify(data)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    user_id = request.form['user_id']
+    number = request.form['phone_number']
+
+    # Run algorithm to find location and timezone of phone number
+    ch_number = phonenumbers.parse(number, "CH")
+    location = geocoder.description_for_number(ch_number, "en")
+    givenPN = phonenumbers.parse(number, "CH")
+    timezoneOfPN = timezone.time_zones_for_number(givenPN)
+    timezone1 = timezoneOfPN[0] if timezoneOfPN else None
+    now = datetime.datetime.now()
+    time = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Save the data to the database
+    conn = sqlite3.connect('api/sqlites.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO phone (user_id, phone_number, location, timezone, time) VALUES (?, ?, ?, ?, ?)", (user_id, number, location, timezone1, time))
+    conn.commit()
+    conn.close()
+
+    return "Data has been submitted successfully."
 
 if __name__ == "__main__":
+    db.init_app(app)
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app, support_credentials=True)

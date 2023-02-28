@@ -1,88 +1,136 @@
-from flask import Blueprint, request
-from flask_restful import Api, Resource, reqparse
+from sqlalchemy import Column, Integer, String
 from __init__ import db
-from model.market import MarketEntry
-
-market_bp = Blueprint("market", __name__)
-market_api = Api(market_bp)
+import random
 
 
-class MarketAPI(Resource):
-    def get(self):
-        date = request.args.get("date")
-        entry = db.session.query(MarketEntry).filter_by(_date=date).all()
-        print("abc" + str(date))
-        if len(entry) != 0:
-            return [e.to_dict() for e in entry]
-        return {"error": "date not found"}, 404
+class InventoryEntry(db.Model):
+    __tablename__ = "inventories"
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("date", required=True, type=str)
-        parser.add_argument("product", required=True, type=str)
-        parser.add_argument("cost", required=True, type=int)
-        parser.add_argument("stock", required=True, type=int)
-        parser.add_argument("market_name", required=True, type=str)
-        args = parser.parse_args()
+    id = Column(Integer, primary_key=True)
+    _username = Column(String(255), nullable=False)
+    _inventory_name = Column(String(255), nullable=False)
+    _quantity = Column(Integer, nullable=False)
+    _price = Column(Integer, nullable=False)
+    _cost = Column(Integer, nullable=False)
+    _delivery = Column(Integer, nullable=False)
+    _extra_notes = Column(String(255), nullable=False)
 
-        entry = MarketEntry(
-            args["date"],
-            args["product"],
-            args["cost"],
-            args["stock"],
+    def __init__(self, username, inventory_name, quantity, price, cost, delivery, extra_notes):
+        self._username = username
+        self._inventory_name = inventory_name
+        self._quantity = quantity
+        self._price = price
+        self._cost = cost
+        self._delivery = delivery
+        self._extra_notes = extra_notes
+
+
+    def __repr__(self):
+        return (
+            "<FitnessEntry(id='%s', username='%s', quantity='%s', price='%s', cost='%s', delivery='%s', extra_notes='%s')>"
+            % (
+                self.id,
+                self.username,
+                self.quantity,
+                self.price,
+                self.cost,
+                self.delivery,
+                self.extra_notes,
+            )
         )
+
+
+    @property
+    def username(self):
+        return self._username
+
+    @username.setter
+    def username(self, value):
+        self._username = value
+
+    @property
+    def inventory_name(self):
+        return self._inventory_name
+
+    @inventory_name.setter
+    def inventory_name(self, value):
+        self._inventory_name = value
+
+    @property
+    def quantity(self):
+        return self._quantity
+
+    @quantity.setter
+    def quantity(self, value):
+        self._quantity = value
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        self._price = value
+
+    @property
+    def cost(self):
+        return self._cost
+
+    @cost.setter
+    def cost(self, value):
+        self._cost = value
+
+    @property
+    def delivery(self):
+        return self._delivery
+
+    @delivery.setter
+    def delivery(self, value):
+        self._delivery = value
+
+    @property
+    def extra_notes(self):
+        return self._extra_notes
+
+    @extra_notes.setter
+    def extra_notes(self, value):
+        self._extra_notes = value
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "quantity": self.quantity,
+            "price": self.price,
+            "cost": self.cost,
+            "delivery": self.delivery,
+            "extra_notes": self.extra_notes,
+            "inventory_name": self.inventory_name,
+        }
+
+def inventory_table_empty():
+    return len(db.session.query(InventoryEntry).all()) == 0
+
+
+def init_inventories():
+    if not inventory_table_empty():
+        return
+
+    entry1 = InventoryEntry("Company A", "Product A", 2000, 150, 70, 150, "shipped")
+    entry2 = InventoryEntry(
+        "Company B", "Product B", 1700, 120, 50, 100, "out for pickup"
+    )
+    entry3 = InventoryEntry("Company C", "Product C", 1500, 200, 80, 200, "shipped")
+    entry4 = InventoryEntry("Company D", "Product D", 100, 20, 8, 20, "shipped")
+    entry5 = InventoryEntry("Company A", "Product 1A", 10, 2, 800, 2, "delivered")
+
+
+    inventory_entries = [entry1, entry2, entry3, entry4, entry5]
+
+    for entry in inventory_entries:
         try:
             db.session.add(entry)
             db.session.commit()
-            return entry.to_dict(), 201
         except Exception as e:
+            print("error while creating entries: " + str(e))
             db.session.rollback()
-            return {"error": f"server error: {e}"}, 500
-
-    def put(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", required=True, type=int)
-        parser.add_argument("product", required=False, type=str)
-        parser.add_argument("cost", required=False, type=int)
-        parser.add_argument("stock", required=False, type=int)
-        parser.add_argument("market_name", required=True, type=str)
-        args = parser.parse_args()
-
-        try:
-            entry = db.session.query(MarketEntry).get(args["id"])
-            if entry:
-                if args["product"]:
-                    entry.calories = args["product"]
-                if args["cost"]:
-                    entry.protein = args["cost"]
-                if args["stock"]:
-                    entry.extra_notes = args["stock"]
-                if args["market_name"]:
-                    entry.extra_notes = args["market_name"]
-                db.session.commit()
-                return entry.to_dict()
-            else:
-                return {"error": "entry not found"}, 404
-        except Exception as e:
-            db.session.rollback()
-            return {"error": f"server error: {e}"}, 500
-
-    def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", required=True, type=int)
-        args = parser.parse_args()
-
-        try:
-            entry = db.session.query(MarketEntry).get(args["id"])
-            if entry:
-                db.session.delete(entry)
-                db.session.commit()
-                return entry.to_dict()
-            else:
-                return {"error": "entry not found"}, 404
-        except Exception as e:
-            db.session.rollback()
-            return {"error": f"server error: {e}"}, 500
-
-
-market_api.add_resource(MarketAPI, "/market")
