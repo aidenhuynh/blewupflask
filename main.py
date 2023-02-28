@@ -100,7 +100,7 @@ toptext = Flask(__name__)
 toptext.config['CORS_ALLOW_HEADERS'] = 'Content-Type'
 toptext.config['CORS_METHODS'] = ['PUT', 'GET', 'REMOVE', 'PATCH']
 # toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: http://0.0.0.0/4002'
-toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: https://aidenhuynh.github.io/'
+toptext.config['CORS_HEADERS'] = 'Access-Control-Allow-Origin: https://aidenhuynh.github.io/leuckblewup'
 
 
 # attention gamers, run the following command in terminal
