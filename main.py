@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # change name for testing
     from flask_cors import CORS
     cors = CORS(app, support_credentials=True)
-    app.run(debug=True) 
+    app.run(debug=True, host="0.0.0.0", port="8087") 
     
 toptext = Flask(__name__)
 
